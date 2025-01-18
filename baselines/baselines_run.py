@@ -27,7 +27,7 @@ if __name__ == '__main__':
     for method in args.method:
 
         regrets_all = []
-        for i in range(5):
+        for i in range(1):
             
             b = load_mnist_1d()
             
@@ -56,7 +56,7 @@ if __name__ == '__main__':
             regrets = []
             sum_regret = 0
             print("Round; Regret; Regret/Round")
-            for t in range(10000):
+            for t in range(100):
                 '''Draw input sample'''
                 context, rwd = b.step()
                 arm_select = model.select(context)

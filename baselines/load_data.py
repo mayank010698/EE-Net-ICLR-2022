@@ -25,7 +25,7 @@ class load_mnist_1d:
         self.dim = 7840
  
     def step(self):
-        x, y = self.dataiter.next()
+        x, y = next(self.dataiter)
         d = x.numpy()[0]
         d = d.reshape(784)
         target = y.item()
