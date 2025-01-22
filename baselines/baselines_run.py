@@ -1,5 +1,6 @@
 from KernelUCB import KernelUCB
 from LinUCB import Linearucb
+from SketchLinUCB import Sklinucb
 from Neural_epsilon import Neural_epsilon
 from NeuralTS import NeuralTS
 from NeuralUCB import NeuralUCBDiag
@@ -8,12 +9,12 @@ import argparse
 import numpy as np
 import sys 
 
-from load_data import load_yelp, load_mnist_1d, load_movielen
+from load_data import *
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Run baselines')
-    parser.add_argument('--dataset', default='mnist', type=str, help='mnist, yelp, movielens, disin')
+    parser.add_argument('--dataset', default='mnist', type=str, help='mnist, yelp, movielens, disin, synthetic')
     parser.add_argument("--method", nargs="+", default=["Neural_epsilon", "NeuralTS", "NeuralUCB", "NeuralNoExplore"], help='list: ["KernelUCB", "LinUCB", "Neural_epsilon", "NeuralTS", "NeuralUCB", "NeuralNoExplore"]')
     parser.add_argument('--lamdba', default='0.1', type=float, help='Regulization Parameter')
     parser.add_argument('--nu', default='0.001', type=float, help='Exploration Parameter')
@@ -23,13 +24,21 @@ if __name__ == '__main__':
     arg_lambda = args.lamdba 
     arg_nu = args.nu
     
+    d = 20
+    K = 4
+    T = 1000
+    data_method = 'random_ball'
+    action_sparsity = 0.5
+    context_sparsity = 0.5
+    
     print("running methods:", args.method)
     for method in args.method:
 
         regrets_all = []
-        for i in range(1):
+        for i in range(5):
             
-            b = load_mnist_1d()
+            # b = load_mnist_1d()
+            b = load_synthetic(data_method,d,K,context_sparsity,action_sparsity)
             
             if method == "KernelUCB":
                 model = KernelUCB(b.dim, arg_lambda, arg_nu)
@@ -49,6 +58,9 @@ if __name__ == '__main__':
                 
             elif method == "NeuralNoExplore":
                 model = NeuralNoExplore(b.dim)
+            
+            elif method == "SketchLinUCB":
+                model = Sklinucb(b.dim, b.dim//5)
             else:
                 print("method is not defined. --help")
                 sys.exit()
@@ -56,13 +68,15 @@ if __name__ == '__main__':
             regrets = []
             sum_regret = 0
             print("Round; Regret; Regret/Round")
-            for t in range(100):
+            for t in range(T):
                 '''Draw input sample'''
                 context, rwd = b.step()
                 arm_select = model.select(context)
                 reward = rwd[arm_select]
 
                 if method == "LinUCB" or method == "KernelUCB":
+                    model.train(context[arm_select],reward)
+                elif method== "SketchLinUCB":
                     model.train(context[arm_select],reward)
 
                 elif method == "Neural_epsilon" or method == "NeuralUCB" or method == "NeuralTS" or method == "NeuralNoExplore":
@@ -82,7 +96,7 @@ if __name__ == '__main__':
 
             print("run:", i, "; ", "regret:", sum_regret)
             regrets_all.append(regrets)
-        np.save("./results/{}_regret".format(method), regrets_all)
+        np.save("../results/{}_regret".format(method), regrets_all)
     
     
     

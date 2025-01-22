@@ -118,6 +118,27 @@ class load_movielen:
         rwd = np.zeros(self.n_arm)
         rwd[arm] = 1
         return np.array(X), rwd
+
+
+class load_synthetic:
+    def __init__(self,method,d,K,context_sparsity,action_sparsity):
+        # Fetch data
+        self.X = np.load(f"../data/synthetic/synthetic_arms_{method}_d_{d}_k_{K}_cs_{context_sparsity}_as_{action_sparsity}.npy")
+        self.Y = np.load(f"../data/synthetic/synthetic_action_{method}_d_{d}_k_{K}_cs_{context_sparsity}_as_{action_sparsity}.npy")
+
+        
+        self.n_arm = K
+        self.dim = d
+        self.pos = 0
+ 
+    def step(self):
+        x, y = self.X[self.pos], self.Y[self.pos]
+        self.pos = self.pos + 1
+        rwd = y + np.random.randn()
+        # rwd = y
+        return x, rwd  
+
+    
     
     
     
