@@ -7,15 +7,19 @@ def get_mean_std(ress):
     
 
 if __name__ == '__main__':    
-    x = range(1000)
+    T = 100000
+    x = range(T)
     plt.figure(figsize=(10, 6))
 
     ucb = np.load("./results/SketchLinUCB_regret.npy")
+    ucb = ucb[:,:T]
     ucb_mean, ucb_std = get_mean_std(ucb)
     plt.plot(x, ucb_mean, 'k-', color='blue',linewidth=2.0,linestyle=':', label = 'SkLinUCB')
     plt.fill_between(x, ucb_mean-ucb_std, ucb_mean+ucb_std, facecolor='blue', alpha=0.2)
     
     ucb = np.load("./results/LinUCB_regret.npy")
+    ucb = ucb[:,:T]
+    print(ucb.shape)
     ucb_mean, ucb_std = get_mean_std(ucb)
     plt.plot(x, ucb_mean, 'k-', color='red',linewidth=2.0,linestyle=':', label = 'LinUCB')
     plt.fill_between(x, ucb_mean-ucb_std, ucb_mean+ucb_std, facecolor='red', alpha=0.2)

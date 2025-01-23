@@ -18,18 +18,23 @@ if __name__ == '__main__':
     parser.add_argument("--method", nargs="+", default=["Neural_epsilon", "NeuralTS", "NeuralUCB", "NeuralNoExplore"], help='list: ["KernelUCB", "LinUCB", "Neural_epsilon", "NeuralTS", "NeuralUCB", "NeuralNoExplore"]')
     parser.add_argument('--lamdba', default='0.1', type=float, help='Regulization Parameter')
     parser.add_argument('--nu', default='0.001', type=float, help='Exploration Parameter')
+    parser.add_argument('--b_sketch',type=int,help='Sketching Dimension')
+    parser.add_argument('--d',type=int,help='Feature dimension')
+    parser.add_argument('--n_arms',type=int,help='Number of arms')
+    parser.add_argument('--n_episodes',type=int,help='Number of episodes')
+    
     
     args = parser.parse_args()
     dataset = args.dataset
     arg_lambda = args.lamdba 
     arg_nu = args.nu
     
-    d = 20
-    K = 4
-    T = 1000
+    d = args.d
+    K = args.n_arms
+    T = args.n_episodes
     data_method = 'random_ball'
-    action_sparsity = 0.5
-    context_sparsity = 0.5
+    action_sparsity = 0.99
+    context_sparsity = 0.99
     
     print("running methods:", args.method)
     for method in args.method:
@@ -60,7 +65,7 @@ if __name__ == '__main__':
                 model = NeuralNoExplore(b.dim)
             
             elif method == "SketchLinUCB":
-                model = Sklinucb(b.dim, b.dim//5)
+                model = Sklinucb(b.dim,args.b_sketch)
             else:
                 print("method is not defined. --help")
                 sys.exit()
@@ -96,7 +101,10 @@ if __name__ == '__main__':
 
             print("run:", i, "; ", "regret:", sum_regret)
             regrets_all.append(regrets)
-        np.save("../results/{}_regret".format(method), regrets_all)
+        if method == "SketchLinUCB":
+            np.save("../results/{}_regret_d_{}_b_{}".format(method,d,b), regrets_all)
+        else:
+            np.save("../results/{}_regret_d_{}".format(method,d), regrets_all)
     
     
     
