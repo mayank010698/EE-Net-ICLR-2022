@@ -8,7 +8,8 @@ import pandas as pd
 import torch
 import torchvision
 from torchvision import datasets, transforms
-
+from torch.utils.data import Dataset, DataLoader
+import os
 
 
 class load_mnist_1d:
@@ -121,7 +122,7 @@ class load_movielen:
 
 
 class load_synthetic:
-    def __init__(self,method,d,K,context_sparsity,action_sparsity):
+    def __init__(self,method,d,K,T,context_sparsity,action_sparsity):
         # Fetch data
         self.X = np.load(f"../data/synthetic/synthetic_arms_{method}_d_{d}_k_{K}_cs_{context_sparsity}_as_{action_sparsity}.npy")
         self.Y = np.load(f"../data/synthetic/synthetic_action_{method}_d_{d}_k_{K}_cs_{context_sparsity}_as_{action_sparsity}.npy")
@@ -136,10 +137,52 @@ class load_synthetic:
         self.pos = self.pos + 1
         rwd = y + np.random.randn()
         # rwd = y
+        return x, rwd 
+    
+class load_synthetic_dataloader:
+    def __init__(self,method,d,K,T,context_sparsity,action_sparsity):
+        batch_size = 1
+        data_dir = f"../data/synthetic/{method}_d_{d}_k_{K}_t_{T}_cs_{context_sparsity}_as_{action_sparsity}"
+        dataset = NumpyDataset(data_dir)
+        train_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size,
+                                      shuffle=True, num_workers=2)
+        self.dataiter = iter(train_loader)
+        self.n_arm = 4
+        self.dim = d
+ 
+    def step(self):
+        x, y = next(self.dataiter)
+        x = x.squeeze().numpy()
+        y = y.squeeze().numpy()
+        rwd = y + np.random.randn()
         return x, rwd  
+    
+class NumpyDataset(Dataset):
+    def __init__(self, directory, transform=None):
+        """
+        Args:
+            directory (str): Path to the directory containing .npy files.
+            transform (callable, optional): Optional transform to apply to data.
+        """
+        self.directory = directory
+        self.transform = transform
+        self.arms = sorted([f for f in os.listdir(directory) if f.startswith("arm_")])
+        self.rewards = sorted([f for f in os.listdir(directory) if f.startswith("rewards_")])
+        
+        print(len(self.arms),len(self.rewards))
+        assert len(self.arms) == len(self.rewards), "Mismatch between arms and rewards files"
 
-    
-    
-    
-    
-    
+    def __len__(self):
+        return len(self.arms)
+
+    def __getitem__(self, idx):
+        arm_path = os.path.join(self.directory, self.arms[idx])
+        reward_path = os.path.join(self.directory, self.rewards[idx])
+        
+        arm_data = np.load(arm_path)
+        reward_data = np.load(reward_path)
+        
+        return arm_data, reward_data
+
+
+

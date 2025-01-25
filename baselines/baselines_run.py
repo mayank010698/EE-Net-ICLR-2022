@@ -20,8 +20,8 @@ if __name__ == '__main__':
     parser.add_argument('--nu', default='0.001', type=float, help='Exploration Parameter')
     parser.add_argument('--b_sketch',type=int,help='Sketching Dimension')
     parser.add_argument('--d',type=int,help='Feature dimension')
-    parser.add_argument('--n_arms',type=int,help='Number of arms')
-    parser.add_argument('--n_episodes',type=int,help='Number of episodes')
+    parser.add_argument('--K',type=int,help='Number of arms')
+    parser.add_argument('--T',type=int,help='Number of episodes')
     
     
     args = parser.parse_args()
@@ -30,11 +30,11 @@ if __name__ == '__main__':
     arg_nu = args.nu
     
     d = args.d
-    K = args.n_arms
-    T = args.n_episodes
+    K = args.K
+    T = args.T
     data_method = 'random_ball'
-    action_sparsity = 0.99
-    context_sparsity = 0.99
+    action_sparsity = 0.5
+    context_sparsity = 0.5
     
     print("running methods:", args.method)
     for method in args.method:
@@ -43,7 +43,7 @@ if __name__ == '__main__':
         for i in range(5):
             
             # b = load_mnist_1d()
-            b = load_synthetic(data_method,d,K,context_sparsity,action_sparsity)
+            b = load_synthetic_dataloader(data_method,d,K,T,context_sparsity,action_sparsity)
             
             if method == "KernelUCB":
                 model = KernelUCB(b.dim, arg_lambda, arg_nu)
@@ -102,9 +102,9 @@ if __name__ == '__main__':
             print("run:", i, "; ", "regret:", sum_regret)
             regrets_all.append(regrets)
         if method == "SketchLinUCB":
-            np.save("../results/{}_regret_d_{}_b_{}".format(method,d,b), regrets_all)
+            np.save(f"../results/{method}_regret_d_{d}_K_{K}_T_{T}_cs_{context_sparsity}_as_{action_sparsity}_b_{args.b_sketch}", regrets_all)
         else:
-            np.save("../results/{}_regret_d_{}".format(method,d), regrets_all)
+            np.save(f"../results/{method}_regret_d_{d}_K_{K}_T_{T}_cs_{context_sparsity}_as_{action_sparsity}", regrets_all)
     
     
     
