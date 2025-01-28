@@ -22,6 +22,9 @@ if __name__ == '__main__':
     parser.add_argument('--d',type=int,help='Feature dimension')
     parser.add_argument('--K',type=int,help='Number of arms')
     parser.add_argument('--T',type=int,help='Number of episodes')
+    parser.add_argument('--csp',type=float,help='Context Sparsity',default=0.5)
+    parser.add_argument('--asp',type=float,help='Action Sparsity',default=0.5)
+    parser.add_argument('--data_method',type=str,help='Sparsity type',default='random_ball')
     
     
     args = parser.parse_args()
@@ -32,9 +35,9 @@ if __name__ == '__main__':
     d = args.d
     K = args.K
     T = args.T
-    data_method = 'random_ball'
-    action_sparsity = 0.5
-    context_sparsity = 0.5
+    data_method = args.data_method
+    action_sparsity = args.asp
+    context_sparsity = args.csp
     
     print("running methods:", args.method)
     for method in args.method:
@@ -102,9 +105,9 @@ if __name__ == '__main__':
             print("run:", i, "; ", "regret:", sum_regret)
             regrets_all.append(regrets)
         if method == "SketchLinUCB":
-            np.save(f"../results/{method}_regret_d_{d}_K_{K}_T_{T}_cs_{context_sparsity}_as_{action_sparsity}_b_{args.b_sketch}", regrets_all)
+            np.save(f"../results_new/{method}_regret_d_{d}_K_{K}_T_{T}_cs_{context_sparsity}_as_{action_sparsity}_b_{args.b_sketch}_{data_method}", regrets_all)
         else:
-            np.save(f"../results/{method}_regret_d_{d}_K_{K}_T_{T}_cs_{context_sparsity}_as_{action_sparsity}", regrets_all)
+            np.save(f"../results_new/{method}_regret_d_{d}_K_{K}_T_{T}_cs_{context_sparsity}_as_{action_sparsity}_{data_method}", regrets_all)
     
     
     
