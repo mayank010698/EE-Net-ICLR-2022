@@ -12,6 +12,7 @@ class Sklinucb:
         self.mu = np.zeros((b, ))
         self.lamdba = lamdba
         self.style = style
+        np.random.seed(42)
         self.sketch = (1/np.sqrt(b))*np.random.randn(b,dim)
 
     def select(self, context):
@@ -32,6 +33,7 @@ class Sklinucb:
         Linv, _ = sp.linalg.lapack.dpotri(zz)
         self.Uinv = np.triu(Linv) + np.triu(Linv, k=1).T
         self.mu = np.dot(self.Uinv, self.jr)
+
         return 0
     
 

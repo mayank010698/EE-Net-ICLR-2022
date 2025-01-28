@@ -1,6 +1,7 @@
 from KernelUCB import KernelUCB
 from LinUCB import Linearucb
 from SketchLinUCB import Sklinucb
+from SketchLinUCBdynamic import Sklinucbdynamic
 from Neural_epsilon import Neural_epsilon
 from NeuralTS import NeuralTS
 from NeuralUCB import NeuralUCBDiag
@@ -69,6 +70,8 @@ if __name__ == '__main__':
             
             elif method == "SketchLinUCB":
                 model = Sklinucb(b.dim,args.b_sketch)
+            elif method == "SketchLinUCBdynamic":
+                model = Sklinucbdynamic(b.dim,args.b_sketch)
             else:
                 print("method is not defined. --help")
                 sys.exit()
@@ -84,7 +87,7 @@ if __name__ == '__main__':
 
                 if method == "LinUCB" or method == "KernelUCB":
                     model.train(context[arm_select],reward)
-                elif method== "SketchLinUCB":
+                elif method== "SketchLinUCB" or method == "SketchLinUCBdynamic":
                     model.train(context[arm_select],reward)
 
                 elif method == "Neural_epsilon" or method == "NeuralUCB" or method == "NeuralTS" or method == "NeuralNoExplore":

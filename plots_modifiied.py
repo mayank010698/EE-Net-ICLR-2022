@@ -18,6 +18,7 @@ for filename in os.listdir(results_dir):
     if filename.endswith(".npy"):  # Only process .npy files
         match = re.match(pattern, filename)
         if match:
+            print(filename)
             params = match.groupdict()
             method = params['method']
             d = int(params['d']) if params['d'] else None

@@ -7,22 +7,22 @@ def get_mean_std(ress):
     
 
 if __name__ == '__main__':    
-    T = 100000
+    T = 2000
     x = range(T)
     plt.figure(figsize=(10, 6))
 
-    ucb = np.load("./results/SketchLinUCB_regret.npy")
+    ucb = np.load("/Users/mayankshrivastava/Desktop/EE-Net-ICLR-2022/results_new/SketchLinUCB_regret_d_2000_K_4_T_2000_cs_0.01_as_0.01_b_300_l1_ball.npy")
     ucb = ucb[:,:T]
     ucb_mean, ucb_std = get_mean_std(ucb)
     plt.plot(x, ucb_mean, 'k-', color='blue',linewidth=2.0,linestyle=':', label = 'SkLinUCB')
     plt.fill_between(x, ucb_mean-ucb_std, ucb_mean+ucb_std, facecolor='blue', alpha=0.2)
     
-    ucb = np.load("./results/LinUCB_regret.npy")
-    ucb = ucb[:,:T]
-    print(ucb.shape)
-    ucb_mean, ucb_std = get_mean_std(ucb)
-    plt.plot(x, ucb_mean, 'k-', color='red',linewidth=2.0,linestyle=':', label = 'LinUCB')
-    plt.fill_between(x, ucb_mean-ucb_std, ucb_mean+ucb_std, facecolor='red', alpha=0.2)
+    # ucb = np.load("/Users/mayankshrivastava/Desktop/EE-Net-ICLR-2022/results_new/LinUCB_regret_d_200_K_4_T_2000_cs_0.01_as_0.01_l1_ball.npy")
+    # ucb = ucb[:,:T]
+    # print(ucb.shape)
+    # ucb_mean, ucb_std = get_mean_std(ucb)
+    # plt.plot(x, ucb_mean, 'k-', color='red',linewidth=2.0,linestyle=':', label = 'LinUCB')
+    # plt.fill_between(x, ucb_mean-ucb_std, ucb_mean+ucb_std, facecolor='red', alpha=0.2)
     
     # ee = np.load('./results/eenet_results1.npy')
     # ee_mean, ee_std = get_mean_std(ee)
