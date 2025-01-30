@@ -6,6 +6,8 @@ from Neural_epsilon import Neural_epsilon
 from NeuralTS import NeuralTS
 from NeuralUCB import NeuralUCBDiag
 from NeuralNoExplore import NeuralNoExplore
+from Thompson import TS
+from SketchThompson import skTS
 import argparse
 import numpy as np
 import sys 
@@ -54,6 +56,9 @@ if __name__ == '__main__':
 
             elif method == "LinUCB":
                 model = Linearucb(b.dim, arg_lambda, arg_nu)
+                
+            elif method == "TS":
+                model = TS(b.dim, args_lambda, args_nu)
 
             elif method == "Neural_epsilon":
                 epsilon = 0.01
@@ -72,6 +77,8 @@ if __name__ == '__main__':
                 model = Sklinucb(b.dim,args.b_sketch)
             elif method == "SketchLinUCBdynamic":
                 model = Sklinucbdynamic(b.dim,args.b_sketch)
+            elif method == "SketchTS":
+                model = SkTS(b.dim, args.b_sketch)
             else:
                 print("method is not defined. --help")
                 sys.exit()

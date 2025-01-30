@@ -1,7 +1,7 @@
 from packages import *
 
 
-class Linearucb:
+class TS:
     # Brute-force Linear TS with full inverse
     def __init__(self, dim, lamdba=0.001, nu=1, style='ts'):
         self.dim = dim
@@ -14,8 +14,9 @@ class Linearucb:
         self.style = style
 
     def select(self, context):
-        sig = np.diag(np.matmul(np.matmul(context, self.Uinv), context.T))
-        r = np.dot(context, self.mu) + np.sqrt(self.lamdba * self.nu * sig)
+        # Sample theta from posterior: N(mu, nu^2 * Uinv)
+        sampled_theta = np.random.multivariate_normal(self.mu, self.nu**2 * self.Uinv)
+        r = np.dot(context, sampled_theta)  # Expected reward for each action
         return np.argmax(r)
         
     

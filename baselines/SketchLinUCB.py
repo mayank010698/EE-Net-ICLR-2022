@@ -16,10 +16,9 @@ class Sklinucb:
         self.sketch = (1/np.sqrt(b))*np.random.randn(b,dim)
 
     def select(self, context):
-        
         context =  (context@self.sketch.T)
         sig = np.diag(np.matmul(np.matmul(context, self.Uinv), context.T))
-        r = np.dot(context, self.mu) + np.sqrt(self.lamdba * self.nu) * sig
+        r = np.dot(context, self.mu) + np.sqrt(self.lamdba * self.nu * sig)
         return np.argmax(r)
         
     

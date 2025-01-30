@@ -56,14 +56,16 @@ def sample_from_l1_ball(num_points,dimension,radius=1):
 
 
 a = sample_from_l1_ball(num_points=1,dimension=d,radius=1)
-a[:,int(-action_sparsity*d):] = 0
+if int(-action_sparsity*d) > 0:
+    a[:,int(-action_sparsity*d):] = 0
 
 
 for iters in range(T//1000):
     X = sample_from_l1_ball(num_points=K*1000,dimension=d,radius=1)
-    X[:,int(-context_sparsity*d):] = 0
+    if int(-context_sparsity*d) > 0:
+        X[:,int(-context_sparsity*d):] = 0
     X_reshaped = X.reshape(1000,K,d)
-    Y = 1000*X_reshaped@a.T
+    Y = d*10*X_reshaped@a.T
     
     for i in range(X_reshaped.shape[0]):
         np.save(f"synthetic/{method}_d_{d}_k_{K}_t_{T}_cs_{context_sparsity}_as_{action_sparsity}/arm_{1000*iters + i}.npy",X_reshaped[i])

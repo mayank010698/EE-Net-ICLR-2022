@@ -43,12 +43,14 @@ def random_ball(num_points, dimension, radius=1):
 
 
 a = random_ball(num_points=1,dimension=d,radius=1)
-a[:,int(-action_sparsity*d):] = 0
+if int(-action_sparsity*d) > 0 :
+    a[:,int(-action_sparsity*d):] = 0
 
 
 for iters in range(T//1000):
     X = random_ball(num_points=K*1000,dimension=d,radius=1)
-    X[:,int(-context_sparsity*d):] = 0
+    if int(-action_sparsity*d) > 0:
+        X[:,int(-context_sparsity*d):] = 0
     X_reshaped = X.reshape(1000,K,d)
     Y = X_reshaped@a.T
     
