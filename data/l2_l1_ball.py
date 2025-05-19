@@ -20,7 +20,7 @@ T = args.T
 
 action_sparsity = 0.0
 context_sparsity = 0.0
-method = 'l1_ball'
+method = 'l2_l1_ball'
 
 os.makedirs(f"synthetic/{method}_d_{d}_k_{K}_t_{T}_cs_{context_sparsity}_as_{action_sparsity}",exist_ok=True)
 
@@ -52,9 +52,23 @@ def sample_from_l1_ball(num_points,dimension,radius=1):
 
     return samples
 
+# %%
+# https://stackoverflow.com/questions/54544971/how-to-generate-uniform-random-points-inside-d-dimension-ball-sphere
+# Generate "num_points" random points in "dimension" that have uniform
+# probability over the unit ball scaled by "radius" (length of points
+# are in range [0, "radius"]).
+def random_ball(num_points, dimension, radius=1):
+    # First generate random directions by normalizing the length of a
+    # vector of random-normal values (these distribute evenly on ball).
+    random_directions = random.normal(size=(dimension,num_points))
+    random_directions /= linalg.norm(random_directions, axis=0)
+    # Second generate a random radius with probability proportional to
+    # the surface area of a ball with a given radius.
+    random_radii = random.random(num_points) ** (1/dimension)
+    # Return the list of random (direction & length) points.
+    return radius * (random_directions * random_radii).T
 
-
-a = sample_from_l1_ball(num_points=1,dimension=d,radius=1)
+a = random_ball(num_points=1,dimension=d,radius=1)
 
 
 

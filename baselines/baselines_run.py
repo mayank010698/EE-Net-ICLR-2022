@@ -7,7 +7,7 @@ from NeuralTS import NeuralTS
 from NeuralUCB import NeuralUCBDiag
 from NeuralNoExplore import NeuralNoExplore
 from Thompson import TS
-from SketchThompson import skTS
+from SketchThompson import SkTS
 import argparse
 import numpy as np
 import sys 
@@ -43,13 +43,17 @@ if __name__ == '__main__':
     context_sparsity = args.csp
     
     print("running methods:", args.method)
+    import time
+    start_time = time.time()
     for method in args.method:
 
         regrets_all = []
         for i in range(5):
             
-            # b = load_mnist_1d()
-            b = load_synthetic_dataloader(data_method,d,K,T,context_sparsity,action_sparsity)
+            b = load_mnist_1d()
+            # b = load_synthetic_dataloader(data_method,d,K,T,context_sparsity,action_sparsity)
+            # b = load_yelp()
+            # b = load_movielen()
             
             if method == "KernelUCB":
                 model = KernelUCB(b.dim, arg_lambda, arg_nu)
@@ -58,7 +62,7 @@ if __name__ == '__main__':
                 model = Linearucb(b.dim, arg_lambda, arg_nu)
                 
             elif method == "TS":
-                model = TS(b.dim, args_lambda, args_nu)
+                model = TS(b.dim, arg_lambda, arg_nu)
 
             elif method == "Neural_epsilon":
                 epsilon = 0.01
@@ -92,9 +96,9 @@ if __name__ == '__main__':
                 arm_select = model.select(context)
                 reward = rwd[arm_select]
 
-                if method == "LinUCB" or method == "KernelUCB":
+                if method == "LinUCB" or method == "KernelUCB" or method == "TS":
                     model.train(context[arm_select],reward)
-                elif method== "SketchLinUCB" or method == "SketchLinUCBdynamic":
+                elif method== "SketchLinUCB" or method == "SketchLinUCBdynamic" or "SketchTS":
                     model.train(context[arm_select],reward)
 
                 elif method == "Neural_epsilon" or method == "NeuralUCB" or method == "NeuralTS" or method == "NeuralNoExplore":
@@ -109,12 +113,19 @@ if __name__ == '__main__':
                 regret = np.max(rwd) - reward
                 sum_regret+=regret
                 regrets.append(sum_regret)
+
                 if t % 50 == 0:
                     print('{}: {:}, {:.4f}'.format(t, sum_regret, sum_regret/(t+1)))
 
             print("run:", i, "; ", "regret:", sum_regret)
             regrets_all.append(regrets)
-        if method == "SketchLinUCB":
+            
+        end_time = time.time()
+
+        elapsed_time = end_time - start_time
+        print(f"Program ran for {elapsed_time} seconds")
+        
+        if method == "SketchLinUCB" or method == "SketchTS":
             np.save(f"../results_new/{method}_regret_d_{d}_K_{K}_T_{T}_cs_{context_sparsity}_as_{action_sparsity}_b_{args.b_sketch}_{data_method}", regrets_all)
         else:
             np.save(f"../results_new/{method}_regret_d_{d}_K_{K}_T_{T}_cs_{context_sparsity}_as_{action_sparsity}_{data_method}", regrets_all)

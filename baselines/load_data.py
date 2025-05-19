@@ -20,7 +20,7 @@ class load_mnist_1d:
         dataset1 = datasets.MNIST('./data', train=True, download=True,
                    transform=transform)
         train_loader = torch.utils.data.DataLoader(dataset1, batch_size=batch_size,
-                                      shuffle=True, num_workers=2)
+                                      shuffle=False, num_workers=2)
         self.dataiter = iter(train_loader)
         self.n_arm = 10
         self.dim = 7840
@@ -47,9 +47,10 @@ class load_mnist_1d:
 class load_yelp:
     def __init__(self):
         # Fetch data
-        self.m = np.load("./data/yelp_2000users_10000items_entry.npy")
-        self.U = np.load("./data/yelp_2000users_10000items_features.npy")
-        self.I = np.load("./data/yelp_10000items_2000users_features.npy")
+        
+        self.m = np.load("../data/Yelp/yelp_2000users_10000items_entry.npy")
+        self.U = np.load("../data/Yelp/yelp_2000users_10000items_features.npy")
+        self.I = np.load("../data/Yelp/yelp_10000items_2000users_features.npy")
         self.n_arm = 10
         self.dim = 20
         self.pos_index = []
@@ -86,11 +87,11 @@ class load_yelp:
 class load_movielen:
     def __init__(self):
         # Fetch data
-        self.m = np.load("./data/movie_2000users_10000items_entry.npy")
-        self.U = np.load("./data/movie_2000users_10000items_features.npy")
-        self.I = np.load("./data/movie_10000items_2000users_features.npy")
+        self.m = np.load("../data/MovieLens/movie_2000users_10000items_entry_1000.npy")
+        self.U = np.load("../data/MovieLens/movie_2000users_10000items_features_1000.npy")
+        self.I = np.load("../data/MovieLens/movie_10000items_2000users_features_1000.npy")
         self.n_arm = 10
-        self.dim = 20
+        self.dim = 2000
         self.pos_index = []
         self.neg_index = []
         for i in self.m:

@@ -8,7 +8,7 @@ def get_mean_std(array):
     return np.mean(array, axis=0), np.std(array, axis=0)
 
 # Directory containing the results
-results_dir = "./results_new"
+results_dir = "./results_sparsity_0.9"
 
 # Regex to match filenames and extract parameters
 # pattern = r"(?P<method>.*?)_regret(?:_d_(?P<d>\d+))?(?:_K_(?P<K>\d+))?(?:_T_(?P<T>\d+))?(?:_cs_(?P<cs>[\d.]+))?(?:_as_(?P<as>[\d.]+))?(?:_b_(?P<b>\d+))?"

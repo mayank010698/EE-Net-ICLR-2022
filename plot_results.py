@@ -7,22 +7,36 @@ def get_mean_std(ress):
     
 
 if __name__ == '__main__':    
-    T = 2000
+    T = 10000
     x = range(T)
     plt.figure(figsize=(10, 6))
 
-    ucb = np.load("/Users/mayankshrivastava/Desktop/EE-Net-ICLR-2022/results_new/SketchLinUCB_regret_d_2000_K_4_T_2000_cs_0.01_as_0.01_b_300_l1_ball.npy")
-    ucb = ucb[:,:T]
+    ucb = np.load("results_new/LinUCB_regret_d_500_K_10_T_2000_cs_0.0_as_0.9_random_ball.npy")
+    ucb = ucb[:,:2000]
     ucb_mean, ucb_std = get_mean_std(ucb)
-    plt.plot(x, ucb_mean, 'k-', color='blue',linewidth=2.0,linestyle=':', label = 'SkLinUCB')
-    plt.fill_between(x, ucb_mean-ucb_std, ucb_mean+ucb_std, facecolor='blue', alpha=0.2)
+    plt.plot(range(2000), ucb_mean, 'k-', color='blue',linewidth=2.0,linestyle=':', label = 'LinUCB')
+    plt.fill_between(range(2000), ucb_mean-ucb_std, ucb_mean+ucb_std, facecolor='blue', alpha=0.2)
+
+    ucb = np.load("/projects/illinois/eng/cs/arindamb/mayanks4/EE-Net-ICLR-2022/results_new/SketchLinUCB_regret_d_500_K_10_T_5000_cs_0.0_as_0.9_b_100_random_ball.npy")
+    ucb = ucb[:,:5000]
+    ucb_mean, ucb_std = get_mean_std(ucb)
+    plt.plot(range(5000), ucb_mean, 'k-', color='red',linewidth=2.0,linestyle=':', label = 'SkLinUCB : b 100')
+    plt.fill_between(range(5000), ucb_mean-ucb_std, ucb_mean+ucb_std, facecolor='red', alpha=0.2)
+
+    ucb = np.load("results_new/SketchLinUCB_regret_d_500_K_10_T_5000_cs_0.9_as_0.0_b_500_random_ball.npy")
+    ucb = ucb[:,:5000]
+    ucb_mean, ucb_std = get_mean_std(ucb)
+    plt.plot(range(5000), ucb_mean, 'k-', color='green',linewidth=2.0,linestyle=':', label = 'SkLinUCB: b 500')
+    plt.fill_between(range(5000), ucb_mean-ucb_std, ucb_mean+ucb_std, facecolor='green', alpha=0.2)
     
-    # ucb = np.load("/Users/mayankshrivastava/Desktop/EE-Net-ICLR-2022/results_new/LinUCB_regret_d_200_K_4_T_2000_cs_0.01_as_0.01_l1_ball.npy")
-    # ucb = ucb[:,:T]
-    # print(ucb.shape)
-    # ucb_mean, ucb_std = get_mean_std(ucb)
-    # plt.plot(x, ucb_mean, 'k-', color='red',linewidth=2.0,linestyle=':', label = 'LinUCB')
-    # plt.fill_between(x, ucb_mean-ucb_std, ucb_mean+ucb_std, facecolor='red', alpha=0.2)
+
+    
+    ucb = np.load("results_new/SketchLinUCB_regret_d_500_K_10_T_5000_cs_0.9_as_0.9_b_1000_random_ball.npy")
+    ucb = ucb[:,:5000]
+    print(ucb.shape)
+    ucb_mean, ucb_std = get_mean_std(ucb)
+    plt.plot(range(5000), ucb_mean, 'k-', color='orange',linewidth=2.0,linestyle=':', label = 'SkLinUCB: b 1000')
+    plt.fill_between(range(5000), ucb_mean-ucb_std, ucb_mean+ucb_std, facecolor='orange', alpha=0.2)
     
     # ee = np.load('./results/eenet_results1.npy')
     # ee_mean, ee_std = get_mean_std(ee)
@@ -48,6 +62,6 @@ if __name__ == '__main__':
     plt.xlabel('Rounds')
     plt.ylabel('Regret')
     plt.legend()
-    plt.title("10x*a")
+    plt.title("Movielens")
     #plt.rcParams["figure.figsize"] = (20, 10)
-    plt.savefig('./figures/regret_mnist.pdf', dpi=500)
+    plt.savefig('./figures_neurips_two/regret_mnist.pdf', dpi=500)

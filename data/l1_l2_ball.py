@@ -10,7 +10,8 @@ parser = argparse.ArgumentParser(description="Argument parser for sparsity and d
 parser.add_argument("--d", type=int, default=2000, help="Dimension of the space (default: 20000)")
 parser.add_argument("--K", type=int, default=4, help="Number of clusters or actions (default: 4)")
 parser.add_argument("--T", type=int, default=1000, help="Number of iterations or time steps (default: 100000)")
-
+parser.add_argument("--action_sparsity", type=float, default=0.5, help="Sparsity level for actions (default: 0.5)")
+parser.add_argument("--context_sparsity", type=float, default=0.5, help="Sparsity level for context (default: 0.5)")
 
 args = parser.parse_args()
 
@@ -20,7 +21,7 @@ T = args.T
 
 action_sparsity = 0.0
 context_sparsity = 0.0
-method = 'l1_ball'
+method = 'l1_l2_ball'
 
 os.makedirs(f"synthetic/{method}_d_{d}_k_{K}_t_{T}_cs_{context_sparsity}_as_{action_sparsity}",exist_ok=True)
 
@@ -52,15 +53,31 @@ def sample_from_l1_ball(num_points,dimension,radius=1):
 
     return samples
 
-
+# %%
+# https://stackoverflow.com/questions/54544971/how-to-generate-uniform-random-points-inside-d-dimension-ball-sphere
+# Generate "num_points" random points in "dimension" that have uniform
+# probability over the unit ball scaled by "radius" (length of points
+# are in range [0, "radius"]).
+def random_ball(num_points, dimension, radius=1):
+    # First generate random directions by normalizing the length of a
+    # vector of random-normal values (these distribute evenly on ball).
+    random_directions = random.normal(size=(dimension,num_points))
+    random_directions /= linalg.norm(random_directions, axis=0)
+    # Second generate a random radius with probability proportional to
+    # the surface area of a ball with a given radius.
+    random_radii = random.random(num_points) ** (1/dimension)
+    # Return the list of random (direction & length) points.
+    return radius * (random_directions * random_radii).T
 
 a = sample_from_l1_ball(num_points=1,dimension=d,radius=1)
-
+if int(-action_sparsity*d) > 0:
+    a[:,int(-action_sparsity*d):] = 0
 
 
 for iters in range(T//1000):
-    X = sample_from_l1_ball(num_points=K*1000,dimension=d,radius=1)
-
+    X = random_ball(num_points=K*1000,dimension=d,radius=1)
+    if int(-context_sparsity*d) > 0:
+        X[:,int(-context_sparsity*d):] = 0
     X_reshaped = X.reshape(1000,K,d)
     Y = d*10*X_reshaped@a.T
     
